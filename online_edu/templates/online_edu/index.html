@@ -1,0 +1,51 @@
+{% extends "online_edu/layout.html" %}
+{% block title %}Rao Academy{% endblock %}
+{% block body %}
+    <div style="display: grid; grid-template-columns: 100%;">
+        <div class="fpxm" style="margin-top: 2%; margin-bottom: 2%; border: 1px solid; padding: 2%; border-radius: 8px; background: rgb(2,48,71); background: linear-gradient(90deg, rgba(2,48,71,1) 26%, rgba(255,183,3,1) 100%); color: white;">
+            <h3>Rao Academy</h3>
+            <h1>All Courses</h1>
+            {% if request.user.lecturer == False %}
+                <h5>Your learning journey begins here! Learn from our {{len_a_c}} courses!</h5>
+            {% else %}
+                <h5>Total Courses: {{len_a_c}}</h5>
+            {% endif %}
+        </div>
+    </div> 
+        <div id="main_container">
+            {% for course in all_courses %}
+                <div class="course_card" >
+                    <div class="inside_course_card" ><a style="text-decoration: none;" href="{% url 'course_view' course.creator course.course_name %}">
+                        <div>
+                            <img width="100%" src="{{course.course_thumbnail}}">
+                        </div>
+                        <h5>{% if course.course_name|length <= 50  %}  {{course.course_name}} {% else %} {{course.course_name|slice:":50"}}... {% endif %}</h5>
+                        <p>{% if course.course_description|length <= 100  %}  {{course.course_description}} {% else %} {{course.course_description|slice:":100"}}... {% endif %}</p>  
+                    </a></div>
+                </div>
+            {% endfor %}
+        </div>
+    <nav aria-label="Page navigation example" style="padding-right: clamp(10px,2%,2%); padding-left: clamp(10px,2%,2%); ">
+        <ul class="pagination justify-content-end">
+            {% if all_courses.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{all_courses.previous_page_number}}" tabindex="-1">Previous</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                </li>
+            {% endif %}
+            <li class="page-item"><a class="page-link" href="?page={{all_courses.number}}">{{all_courses.number}}<span class="sr-only"></span></a></li>
+            {% if all_courses.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{all_courses.next_page_number}}" tabindex="-1">Next</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endblock %}

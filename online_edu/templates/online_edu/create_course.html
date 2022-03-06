@@ -1,0 +1,19 @@
+{% extends "online_edu/layout.html" %}
+{% block title %}Create Course{% endblock %}
+{% block body %}
+
+    <div style="display: grid; grid-template-columns: 100%;">
+        <div class="fpxm" style="margin-top: 2%; margin-bottom: 2%; border: 1px solid; padding: 2%; border-radius: 8px; background: rgb(0,0,239); background: linear-gradient(90deg, rgba(0,0,239,1) 0%, rgba(172,24,24,1) 100%); color: white;">
+            <h3>Rao Academy</h3>
+            <h1>Create Course</h1>
+        </div>
+    </div> 
+    {% if user.lecturer == True %}
+        <h3 class="fpx" style="color: red;">{{message}}</h3>
+        <form method="POST">
+            {% csrf_token %}
+            {{form}}
+            <div><input class="button_blue" type="submit" value="Create"></div>
+        </form>
+    {% endif %}
+{% endblock %}

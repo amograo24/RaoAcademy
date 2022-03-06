@@ -1,0 +1,219 @@
+{% extends "online_edu/layout.html" %}
+{% block title %}{{course.course_name}}{% endblock %}
+{% block body %}
+    <h3 id="error"  class="alert alert-danger" role="alert" style="display: none; margin-left: clamp(10px,2%,2%); margin-right: clamp(10px,2%,2%);">Couldn't change course name as another course created by you exists with the same name!</h3>
+    <div id="normal_div">
+        <h1 class="fpx" id="cnh{{course.id}}">{{course.course_name}}</h1>
+        <p class="fpx" style="padding-top: 10px;" id="descd{{course.id}}">{{course.course_description}}</p>
+        <p class="fpx">Course created by <a href="{% url 'profile' course.creator %}">{{course.creator}}</a> on {{course.course_date}}</p>
+        <p class="fpx" id="ccp{{course.id}}" >Category: {% if course.course_category %} <a id="cca{{course.id}}" href="{% url 'category' course.course_category %}">{{course.course_category}}</a>{% else %} None {% endif %}</p>
+        {% if request.user == course.creator %}
+        <p class="fpx" style="color: gray;">Subscribers: {{course.subscribed_users.all.count}}</p><div><button class="button_blue" id="edit_button">Edit</button></div>
+        {% endif %}
+        {% if request.user.is_authenticated %}
+            {% if  course.creator != request.user %}
+                <div><button class="button_blue" id="subscribe_unsubscribe" style="background-color: red; margin-right: clamp(10px,2%,2%); margin-left: clamp(10px,2%,2%); outline: none; border: none; box-shadow: none;" onmouseover="this.style.backgroundColor='#bf0000'" onmouseout="this.style.backgroundColor='red'" >
+                    {% if has_subscribed %}Unsubscribe{% else %}Subscribe{% endif %}
+                </button><span id="sub_span">{{course.subscribed_users.all.count}}</span></div>
+            {% elif course.creator == request.user %}
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" style="background-color: red; margin-right: clamp(10px,2%,2%); margin-left: clamp(10px,2%,2%); outline: none; border: none; box-shadow: none;" onmouseover="this.style.backgroundColor='#bf0000'" onmouseout="this.style.backgroundColor='red'">
+                    Delete this course
+                </button>
+
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Delete Course</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                        <p style="word-wrap: break-word;" >Are you sure you want to delete "{{course.course_name}}"?</p>
+                        {% if course.notes.all.count != 0 %}
+                            The following note(s) will also be deleted:
+                            <ul>
+                                {% for note in course.notes.all %}
+                                    <li>{{note.title}}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="deletec{{course.id}}" style="background-color: red; border-color: red; padding-top: 0.375rem; padding-right: 0.75rem; padding-bottom: 0.375rem; padding-left: 0.75rem; box-shadow: none;" onmouseover="this.style.backgroundColor='#bf0000'" onmouseout="this.style.backgroundColor='red'">Delete</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>            
+            {% endif %}
+        {% endif %}
+        <hr>
+        {% if course.notes.all.count == 0 %}<h1 class="fpx">This course doesn't have any notes yet.</h1>{% endif %}
+        <div id="main_container">
+            {% for note in course.notes.all %}
+                <div class="course_card" >
+                    <div class="inside_course_card" ><a style="text-decoration: none;" href="{% url 'note_view' note.id %}">
+                        <div>
+                            <img width="100%" {% if note.thumbnail %} src="{{note.thumbnail}}" alt="{{note.title}}}" {% else %} src="{{course.course_thumbnail}}" alt="{{course.course_name}}" {% endif %}>
+                        </div>
+                        <h5>{% if note.title|length <= 50  %}  {{note.title}} {% else %} {{note.title|slice:":50"}}... {% endif %}</h5>
+                        <p>{% if note.description|length <= 100  %}  {{note.description}} {% else %} {{note.description|slice:":100"}}... {% endif %}</p>  
+                    </a></div>
+                </div>
+            {% endfor %}
+        </div>        
+    </div>
+
+    {% if request.user == course.creator %}
+        <div id="edit_div" style="display: none;">
+            <form id="edit_form{{course.id}}"method="POST"> 
+                <div style="display: grid; grid-template-columns: 100%;">
+                    <div class="fpxm" style="margin-top: 2%; margin-bottom: 2%; border: 1px solid; padding: 2%; border-radius: 8px; background: rgb(0,0,239); background: linear-gradient(90deg, rgba(0,0,239,1) 0%, rgba(172,24,24,1) 100%); color: white;">
+                        <h3>Rao Academy</h3>
+                        <h1>Edit Course</h1>
+                    </div>
+                </div> 
+                <hr>
+                <h4 class="edit_labels">Course Name:</h4>
+                <input class="course_edit_form" required id="cn{{course.id}}" type="text" placeholder="Course Name" maxlength="100" value="{{course.course_name}}">
+                <h4 class="edit_labels">Course Category:</h4>
+                <select class="course_edit_form" id="cc{{course.id}}">
+                    <option value="">-----</option>
+                    {% for category in categories %}
+                        <option value="{{category}}" {% if category == course.course_category %} selected {% endif %} >{{category}}</option>
+                    {% endfor %}
+                </select>
+                <h4 class="edit_labels">Course Description:</h4>
+                <textarea class="course_edit_form" rows="3" required id="cd{{course.id}}" placeholder="Course Description" maxlength="200">{{course.course_description}}</textarea>
+                <h4 class="edit_labels">Course Thumbnail URL:</h4>
+                <input class="course_edit_form" required id="ct{{course.id}}" type="URL" placeholder="Course Thumbnail" value="{{course.course_thumbnail}}">
+                <div><input class="button_blue" type="submit" value="Save"></div>
+            </form>
+        </div>
+    {% endif %}
+
+    {% if request.user == course.creator %}
+        <script>
+            let delete_btn = document.querySelector('#deletec{{course.id}}')
+            delete_btn.addEventListener('click',event => {
+                console.log(event)
+                let id=event.target.id.split('deletec')[1]
+                console.log(id)
+                let to_delete="yes"
+
+                deleteCourse(id,to_delete)
+            })
+
+            function deleteCourse(id,to_delete) {
+                fetch(`/apis/delete_course/{{course.creator}}/{{course.course_name}}`, {
+                    method:"POST",
+                    body:JSON.stringify({
+                        to_delete:to_delete
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data.status)
+                    if (data.status===200) {
+                        window.location.replace(`/`);
+                    }
+                })
+            }
+        </script>
+        <script>
+            let edit_button=document.querySelector('#edit_button')
+            edit_button.addEventListener('click',event=>{
+                console.log(event)
+                document.querySelector('#normal_div').style.display="none";
+                document.querySelector('#edit_div').style.display="block";
+            })
+            let edit_form=document.querySelector(`#edit_form{{course.id}}`)
+            edit_form.addEventListener('submit',event => {
+                event.preventDefault()
+                let id=event.target.id.split('edit_form')[1]
+                let cn=document.querySelector(`#cn${id}`).value
+                let ct=document.querySelector(`#ct${id}`).value
+                let cd=document.querySelector(`#cd${id}`).value
+                let cc=document.querySelector(`#cc${id}`).value
+
+                editCourse(id,cn,cd,ct,cc)
+
+                document.querySelector('#edit_div').style.display="none";
+                document.querySelector('#normal_div').style.display="block";
+
+            })
+
+            function editCourse(id,cn,cd,ct,cc) {
+                console.log(`${id}`)
+                fetch(`/apis/edit_course/{{course.creator}}/{{course.course_name}}`, {
+                    method:"POST",
+                    body:JSON.stringify({
+                        cn:cn,
+                        cd:cd,
+                        ct:ct,
+                        cc:cc
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('########')
+                    console.log(data)
+                    if (data.status==150) {
+                        console.log('success')
+                        document.querySelector('#error').style.display="none"
+                        if (cd.trim()!="") {
+                            document.querySelector(`#descd${id}`).innerHTML=cd
+                        }
+                        if (cc.trim()!=="") {
+                            document.querySelector(`#ccp${id}`).innerHTML=`Category: <a id="ccp{{course.id}}" href="/category/${cc}/courses">${cc}</a>`
+
+                        } else {
+                            document.querySelector(`#ccp${id}`).innerHTML='Category: None'
+                        }
+
+                    }
+                    else if (data.status===200) {
+                        console.log('success')
+                        window.location.replace(`/{{course.creator}}/${cn}`);
+                    }
+                    else {
+                        document.querySelector('#error').style.display="block"
+                        console.log('not success')
+                    }
+                })
+                .catch(error => console.error(error))
+            }        
+        </script>
+    {% endif %}
+
+    <script>
+        {% if has_subscribed %}
+        let to_subscribe=false
+        {% else %}
+        let to_subscribe=true
+        {% endif %}
+        subscribe_text={true:"Subscribe",false:"Unsubscribe"}
+        let s_u=document.querySelector('#subscribe_unsubscribe')
+        s_u.addEventListener('click', function() {
+            fetch(`/apis/subscribe_unsubscribe/{{course.id}}`,{
+                method:"POST",
+                body:JSON.stringify({
+                    to_subscribe:to_subscribe
+                })
+            })
+            .then(response => {
+                if (response.status===200){
+                    to_subscribe=!to_subscribe;
+                    s_u.innerHTML=subscribe_text[to_subscribe]
+                    if (to_subscribe===true) {
+                        document.querySelector('#sub_span').innerHTML--
+                    } else {
+                        document.querySelector('#sub_span').innerHTML++
+                    }
+                }   
+            })
+        })
+    </script>
+
+    
+{% endblock %}

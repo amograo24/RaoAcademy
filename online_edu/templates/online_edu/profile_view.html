@@ -1,0 +1,70 @@
+{% extends "online_edu/layout.html" %}
+
+{% block title %}{{profile}}{% endblock %}
+{% block body %}
+    {% if profile.lecturer == False %}
+        <h1 class="fpx" >This user is not a lecturer.</h1>
+    {% else %}
+        <div style="display: grid; grid-template-columns: 100%;">
+            <div class="fpxm" style="margin-top: 2%; margin-bottom: 2%; border: 1px solid black; padding: 2%; border-radius: 8px; background-color: black; color: white;">
+                <h3>Rao Academy</h3>
+                <h1>{{profile}}</h1>
+                <h4>Total Courses: {{courses_by_this_user|length}}</h4>
+            {% if request.user.is_authenticated %}
+                {% if profile != request.user %}
+                    <div><button class="button_blue" id="follow_unfollow" style="margin-top: 10px; margin-left: 0; background-color: white; color: black;" onmouseover="this.style.backgroundColor='#e8e8e8'" onmouseout="this.style.backgroundColor='white'" >
+                        {% if is_follow %}Unfollow{% else %}Follow{% endif %}
+                    </button></div>
+                {% endif %}
+            {% endif %}
+                
+                <div><span class="p_span">Followers: <span  id="f_span">{{profile_stats.follower.all.count}}</span></span><span class="b_span"> | </span><span class="p_span">Total Subscribers: {{total_subscribers}}</span><span class="b_span"> | </span><span class="p_span">Total Likes: {{total_likes}}</span></div>    
+            </div>
+        </div>    
+    {% endif %}
+        
+    
+    <div id="main_container">
+        {% for course in courses_by_this_user %}
+            <div class="course_card" >
+                <div class="inside_course_card" ><a style="text-decoration: none;" href="{% url 'course_view' course.creator course.course_name %}">
+                    <div>
+                        <img width="100%" src="{{course.course_thumbnail}}">
+                    </div>
+                    <h5>{% if course.course_name|length <= 50  %}  {{course.course_name}} {% else %} {{course.course_name|slice:":50"}}... {% endif %}</h5>
+                    <p>{% if course.course_description|length <= 100  %}  {{course.course_description}} {% else %} {{course.course_description|slice:":100"}}... {% endif %}</p>  
+                </a></div>
+            </div>
+        {% endfor %}
+    </div>
+    <script>
+        {% if is_follow %}
+        let to_follow=false
+        {% else %}
+        let to_follow=true
+        {% endif %}
+        follow_text={true:"Follow",false:"Unfollow"}
+        inc_follower={true:1,false:-1}
+        let f_u=document.querySelector('#follow_unfollow')
+        f_u.addEventListener('click', function() {
+            fetch(`/apis/follow_unfollow/{{profile}}`,{
+                method:"POST",
+                body:JSON.stringify({
+                    to_follow:to_follow
+                })
+            })
+            .then(response => {
+                if (response.status===200){
+                    to_follow=!to_follow;
+                    f_u.innerHTML=follow_text[to_follow]
+                    if (to_follow===true) {
+                        document.querySelector('#f_span').innerHTML--
+                    } else {
+                        document.querySelector('#f_span').innerHTML++
+                    }
+                }   
+            })
+        })
+    </script>
+{% endblock %}
+

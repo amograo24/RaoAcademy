@@ -1,0 +1,323 @@
+{% extends "online_edu/layout.html" %}
+
+{% block title %}{{note.title}}{% endblock %}
+{% block body %}
+    <div id="normal_div">
+        <h1 class="fpx" id="titleh{{note.id}}">{{note.title}}</h1>
+        <p class="fpx" id="descp{{note.id}}">{{note.description}}</p>
+        <p class="fpx">From course <a id="coursed{{note.id}}" href="{% url 'course_view' note.course.creator note.course.course_name %}">{{note.course}}</a> by <a href="{% url 'profile' note.creator %}">{{note.creator}}</a></p> 
+        <p class="fpx" style="color: gray;" >Date created: {{note.date}}</p>
+        <p class="fpx">Category: <a id="categoryd{{note.id}}" href="{% url 'category' note.category %}">{{note.category}}</a></p>
+        {% if request.user == note.creator %}<p class="fpx" style="color: gray;">Likes: {{note.like.all.count}}</p><div><button class="button_blue" id="edit_button">Edit</button></div>{% endif %}
+        {% if request.user.is_authenticated %}
+            {% if note.creator != request.user %}
+                <div><button id="like_unlike">{% if has_liked %}<svg xmlns="http://www.w3.org/2000/svg"  width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
+                    <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a9.84 9.84 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733.058.119.103.242.138.363.077.27.113.567.113.856 0 .289-.036.586-.113.856-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.163 3.163 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.82 4.82 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/>
+                  </svg>{% else %}<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up" viewBox="0 0 16 16">
+                    <path d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.144 2.144 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a9.84 9.84 0 0 0-.443.05 9.365 9.365 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111L8.864.046zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a8.908 8.908 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.224 2.224 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.866.866 0 0 1-.121.416c-.165.288-.503.56-1.066.56z"/>
+                  </svg>{% endif %}</button><span id="like_span">{{note.like.all.count}}</span>
+                </div>
+            {% elif note.creator == request.user %}
+
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" style="background-color: red; margin-right: clamp(10px,2%,2%); margin-left: clamp(10px,2%,2%); outline: none; border: none; box-shadow: none;" onmouseover="this.style.backgroundColor='#bf0000'" onmouseout="this.style.backgroundColor='red'">
+                    Delete this note
+                </button>
+                
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Delete Note</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                        Are you sure you want to delete "{{note.title}}"?
+                        </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="deleten{{note.id}}" style="background-color: red; border-color: red; padding-top: 0.375rem; padding-right: 0.75rem; padding-bottom: 0.375rem; padding-left: 0.75rem; box-shadow: none;" onmouseover="this.style.backgroundColor='#bf0000'" onmouseout="this.style.backgroundColor='red'">Delete</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+
+        <hr>
+        <div id="iframe{{note.id}}" class="iframe-container" {% if note.video_iframe %} style="text-align: center;" {% else %} style="text-align: center; display: none;" {% endif %} >{{note.video_iframe | safe}}</div>
+        <div id="contentd{{note.id}}" class="fpx">{{note.html_notes_content | safe}}</div>
+        <div style="text-align: center;"><img class="t_url{{note.id}}" style="max-width: 100%; padding-left: 2%; padding-right: 2%; max-height: 400px;" {% if note.thumbnail %} src="{{note.thumbnail}}" alt="{{note.title}}" {% else %} src="{{note.course.course_thumbnail}}" alt="{{note.course.course_name}}" {% endif %}></div>
+        
+        {% if request.user.is_authenticated %}
+            <form id="comment_form{{note.id}}" method="POST" style="margin-bottom: 2%; margin-top: 2%;" >
+                <input id="com_con{{note.id}}" style="width: 77%; margin-right: 0;" placeholder="Post Comment" type="text" required class="course_edit_form" maxlength="200">
+                <input type="submit" value="Post" class="button_blue">
+            </form>
+        {% endif %}
+        <div id="js_comments{{note.id}}" class="fpx"></div>
+        <div id="dj_comments" class="fpx" ></div>        
+    </div>
+    
+    {% if request.user == note.creator %}
+        <div id="edit_div" style="display: none;">
+            <form id="edit_form{{note.id}}"method="POST"> 
+                <div style="display: grid; grid-template-columns: 100%;">
+                    <div class="fpxm" style="margin-top: 2%; margin-bottom: 2%; border: 1px solid; padding: 2%; border-radius: 8px; background: rgb(0,25,204); background: linear-gradient(90deg, rgba(0,25,204,1) 0%, rgba(255,149,0,1) 100%); color: white;">
+                        <h3>Rao Academy</h3>
+                        <h1>Edit Note</h1>
+                    </div>
+                </div> 
+                <hr>
+                <h4 class="edit_labels">Title:</h4>
+                <input class="course_edit_form" required id="title{{note.id}}" type="text" placeholder="Title" maxlength="100" value="{{note.title}}">
+                <h4 class="edit_labels">Course:</h4>
+                <select class="course_edit_form" required id="course{{note.id}}">
+                    {% for course in courses_by_this_user %}
+                        <option value="{{course}}" {% if course == note.course %} selected {% endif %} >{{course}}</option>
+                    {% endfor %}
+                </select>
+                <h4 class="edit_labels">Category:</h4>
+                <select class="course_edit_form" required id="category{{note.id}}">
+                    {% for category in categories %}
+                        <option value="{{category}}" {% if category == note.category %} selected {% endif %} >{{category}}</option>
+                    {% endfor %}
+                </select>
+                <h4 class="edit_labels">Additional Tag(s):</h4>
+                <input class="course_edit_form" id="a_category{{note.id}}" type="text" placeholder="Additional Category" maxlength="200" value="{{note.additional_category}}">
+                <h4 class="edit_labels">Description:</h4>
+                <textarea class="course_edit_form" rows="3" required id="desc{{note.id}}" placeholder="Description" maxlength="200">{{note.description}}</textarea>  
+                <h4 class="edit_labels">Thumbnail URL:</h4>
+                <input class="course_edit_form" id="t_url{{note.id}}" type="url" placeholder="Thumbnail URL" value="{{note.thumbnail}}">
+                <h4 class="edit_labels">Video iframe:</h4>
+                <textarea class="course_edit_form" id="v_iframe{{note.id}}" rows="3" placeholder="Video iframe">{{note.video_iframe}}</textarea>
+                <h4 class="edit_labels">Content in Markdown:</h4>
+                <textarea class="course_edit_form" rows="15" required id="content{{note.id}}" placeholder="Notes Content">{{note.markdown_notes_content}}</textarea>
+                <div><input class="button_blue" type="submit" value="Save"></div>
+            </form>
+        </div>
+    {% endif %}
+
+ 
+    <script>
+        let counter = 0;
+
+        const quantity = 10;
+
+        document.addEventListener('DOMContentLoaded', load);
+
+        window.onscroll = () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+                load();
+            }
+        };
+
+        function load() {
+
+            const start = counter;
+            const end = start + quantity - 1;
+            counter = end + 1;
+
+            fetch(`/apis/notes/comments/{{note.id}}?start=${start}&end=${end}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.comments)
+                data.comments.forEach(add_comment);
+            })
+        };
+
+        function add_comment(contents) {
+
+            const comment = document.createElement('div');
+            comment.innerHTML = `<div style="margin-bottom: 2%; margin-right: 20%; border: 1px solid gray; padding: 0.75%; border-radius: 3px;"><h6 style="color: gray;">By ${contents.commenter} on ${contents.time_of_comment}</h6><h5>${contents.comment}</h5></div>`;
+            document.querySelector('#dj_comments').append(comment);
+        };
+
+    </script>
+    <script>
+        let comment_form=document.querySelector(`#comment_form{{note.id}}`)
+        comment_form.addEventListener('submit',event => {
+            event.preventDefault()
+            let id=event.target.id.split('comment_form')[1]
+            let com_con=document.querySelector(`#com_con${id}`).value
+            postComment(id,com_con)
+        })
+
+        function postComment(id,com_con) {
+            fetch(`/apis/post_comment/${id}`, {
+                method:"POST",
+                body:JSON.stringify({
+                    com_con:com_con
+                })
+            })    
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.status)
+                if (data.status===200) {
+                    let date = new Date()
+                    let minutes = ("0"+date.toLocaleString('en-US',{minute:'numeric'})).slice(-2)
+                    let hours = ("0"+date.toLocaleString('en-US',{hour:'numeric',hour12:true})).slice(0,3).trim().slice(-2)
+                    let am_pm = date.toLocaleString('en-US',{hour:'numeric',hour12:true}).slice(-2)
+                    let day = ("0"+date.toLocaleString('en-US',{day:'numeric'})).slice(-2)
+                    let month = date.toLocaleString('en-US',{month:'short'})
+                    let year = date.getFullYear()
+                    console.log(year)
+                    let time = `${hours}:${minutes}${am_pm}`
+                    let datetime = `${month} ${day}, ${year}, ${time}` 
+                    let div=document.createElement('div')
+                    div.innerHTML=`<div style="margin-bottom: 2%; margin-right: 20%; border: 1px solid gray; padding: 0.75%; border-radius: 3px;"><h6 style="color: gray;">By {{request.user}} on ${datetime}</h6><h5>${com_con}</h5></div>`
+                    document.querySelector(`#js_comments${id}`).prepend(div)
+                    document.querySelector(`#com_con${id}`).value=""
+                }
+            })       
+        }
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    {% if request.user == note.creator %}
+        <script>
+            let delete_btn = document.querySelector('#deleten{{note.id}}')
+            delete_btn.addEventListener('click',event => {
+                console.log(event)
+                let id=event.target.id.split('deleten')[1]
+                console.log(id)
+                let to_delete="yes"
+
+                deleteNote(id,to_delete)
+            })
+
+            function deleteNote(id,to_delete) {
+                fetch(`/apis/delete_note/${id}`, {
+                    method:"POST",
+                    body:JSON.stringify({
+                        to_delete:to_delete
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data.status)
+                    if (data.status===200) {
+                        window.location.replace(`/`);
+                    }
+                })
+            }
+        </script>
+        <script>
+            let edit_button=document.querySelector('#edit_button')
+            edit_button.addEventListener('click',event=>{
+                console.log(event)
+                document.querySelector('#normal_div').style.display="none";
+                document.querySelector('#edit_div').style.display="block";
+            })
+            let edit_form=document.querySelector(`#edit_form{{note.id}}`)
+            edit_form.addEventListener('submit',event => {
+                event.preventDefault()
+                let id=event.target.id.split('edit_form')[1]
+                let t_url=document.querySelector(`#t_url${id}`).value
+                let title=document.querySelector(`#title${id}`).value
+                let a_category=document.querySelector(`#a_category${id}`).value
+                let desc=document.querySelector(`#desc${id}`).value
+                let content=document.querySelector(`#content${id}`).value
+                let v_iframe=document.querySelector(`#v_iframe${id}`).value
+                let category=document.querySelector(`#category${id}`).value
+                let course=document.querySelector(`#course${id}`).value
+                console.log(document.querySelector(`#course${id}`))
+                console.log(course)
+                editNote(id,t_url,title,a_category,desc,content,v_iframe,category,course)
+
+                document.querySelector('#edit_div').style.display="none";
+                document.querySelector('#normal_div').style.display="block";
+
+            })
+
+            function editNote(id,t_url,title,a_category,desc,content,v_iframe,category,course) {
+                console.log(`${id}`)
+                console.log(`${course}`)
+                console.log(`${category}`)
+                fetch(`/apis/edit_note/${id}`, {
+                    method:"POST",
+                    body:JSON.stringify({
+                        t_url:t_url,
+                        title:title,
+                        a_category:a_category,
+                        desc:desc,
+                        content:content,
+                        v_iframe:v_iframe,
+                        category:category,
+                        course:course
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    if (data.status===200) {
+                        console.log('success')
+                        
+                        document.querySelector(`#coursed${id}`).href=`/{{note.creator}}/${course}`
+                        document.querySelector(`#coursed${id}`).innerHTML=course
+                        document.querySelector(`#categoryd${id}`).innerHTML=category
+                        document.querySelector(`#categoryd${id}`).href=`/category/${category}/courses`
+
+
+                        if (t_url.trim()!=""){
+                            document.querySelector(`.t_url${id}`).src=t_url
+                        } else {
+                            document.querySelector(`.t_url${id}`).src='{{note.course.course_thumbnail}}'
+                            console.log(document.querySelector(`.t_url${id}`).src)
+                        }
+
+                        if (title.trim()!="") {
+                            document.querySelector(`#titleh${id}`).innerHTML=title
+                        }
+                        if (desc.trim()!="") {
+                            document.querySelector(`#descp${id}`).innerHTML=desc                        
+                        }
+                        if (content.trim()!="") {
+                            document.querySelector(`#contentd${id}`).innerHTML=marked.parse(content)  //marked(content)                         
+                        }
+                        if (v_iframe.trim()!="") {
+                            document.querySelector(`#iframe${id}`).innerHTML=v_iframe
+                            document.querySelector(`.iframe-container`).style.display='block';
+                        } else {
+                            document.querySelector(`#iframe${id}`).innerHTML=v_iframe
+                            document.querySelector(`.iframe-container`).style.display='none';
+                        }
+
+                    }
+                    else {
+                        console.log('not success')
+                    }
+                })
+                .catch(error => console.error(error))
+            }
+        </script>
+    {% endif %}
+    <script>
+        {% if has_liked %}
+        let to_like=false
+        {% else %}
+        let to_like=true
+        {% endif %}
+
+        let l_u=document.querySelector('#like_unlike')
+        l_u.addEventListener('click', function() {
+            fetch(`/apis/like_unlike/{{note.id}}`,{
+                method:"POST",
+                body:JSON.stringify({
+                    to_like:to_like
+                })
+            })
+            .then(response => {
+                if (response.status===200){
+                    to_like=!to_like;
+                    if (to_like===true) {
+                        l_u.innerHTML=`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up" viewBox="0 0 16 16"><path d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.144 2.144 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a9.84 9.84 0 0 0-.443.05 9.365 9.365 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111L8.864.046zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a8.908 8.908 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.224 2.224 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.866.866 0 0 1-.121.416c-.165.288-.503.56-1.066.56z"/></svg>`
+                        document.querySelector('#like_span').innerHTML--
+                    } else {
+                        l_u.innerHTML=`<svg xmlns="http://www.w3.org/2000/svg"  width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16"><path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a9.84 9.84 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733.058.119.103.242.138.363.077.27.113.567.113.856 0 .289-.036.586-.113.856-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.163 3.163 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.82 4.82 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/></svg>`
+                        document.querySelector('#like_span').innerHTML++ 
+                    }
+                }   
+            })
+        })
+    </script>
+{% endblock %}

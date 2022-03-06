@@ -1,0 +1,17 @@
+{% extends "online_edu/layout.html" %}
+{% block title %}Upload Notes{% endblock %}
+{% block body %}
+    <div style="display: grid; grid-template-columns: 100%;">
+        <div class="fpxm" style="margin-top: 2%; margin-bottom: 2%; border: 1px solid; padding: 2%; border-radius: 8px; background: rgb(0,25,204); background: linear-gradient(90deg, rgba(0,25,204,1) 0%, rgba(255,149,0,1) 100%); color: white;">
+            <h3>Rao Academy</h3>
+            <h1>Upload Notes</h1>
+        </div>
+    </div> 
+    {% if user.lecturer == True %}
+        <form method="POST">
+            {% csrf_token %}
+            {{form}}
+            <div><input class="button_blue" type="submit"></div>
+        </form>
+    {% endif %}
+{% endblock %}

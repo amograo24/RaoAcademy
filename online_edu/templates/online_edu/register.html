@@ -1,0 +1,38 @@
+{% extends "online_edu/layout.html" %}
+{% block title %}Register{% endblock %}
+{% block body %}
+
+    {% if message %}
+        <div class="fpxm" >{{ message }}</div>
+    {% endif %}
+    <div style="display: grid; grid-template-columns: 100%;">
+        <div class="fpxm" style="margin-top: 2%; margin-bottom: 2%; border: 1px solid; padding: 2%; border-radius: 8px; background: rgb(239,0,0); background: linear-gradient(90deg, rgba(239,0,0,1) 0%, rgba(1,1,1,1) 99%); color: white;">
+            <h3>Rao Academy</h3>
+            <h1>Register</h1>
+            <h5>Begin your learning journey!</h5>
+        </div>
+    </div> 
+    <form action="{% url 'register' %}" method="post">
+        {% csrf_token %}
+        <h4 class="edit_labels">Username:</h4>
+        <div>
+            <input class="course_edit_form" autofocus type="text" name="username" placeholder="Username">
+        </div>
+        <h4 class="edit_labels">Email Address:</h4>
+        <div class="form-group">
+            <input class="course_edit_form" type="email" name="email" placeholder="Email Address">
+        </div>
+        <h4 class="edit_labels">Password:</h4>
+        <div class="form-group">
+            <input class="course_edit_form" type="password" name="password" placeholder="Password">
+        </div>
+        <h4 class="edit_labels">Confirm Password:</h4>
+        <div class="form-group">
+            <input class="course_edit_form" type="password" name="confirmation" placeholder="Confirm Password">
+        </div>
+        <input class="button_blue" type="submit" value="Register">
+    </form>
+
+    <p class="fpx">Already have an account? <a href="{% url 'login' %}">Log In here.</a></p>
+
+{% endblock %}

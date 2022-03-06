@@ -1,0 +1,52 @@
+{% extends "online_edu/layout.html" %}
+{% block title %}Subscribed Courses{% endblock %}
+{% block body %}
+    <div style="display: grid; grid-template-columns: 100%;">
+        <div class="fpxm" style="margin-top: 2%; margin-bottom: 2%; border: 1px solid; padding: 2%; border-radius: 8px; background: rgb(229,60,72); background: linear-gradient(90deg, rgba(229,60,72,1) 36%, rgba(168,218,220,1) 100%); color: white;">
+            <h3>Rao Academy</h3>
+            {% if s_c_c == 0 %}
+                <h1>You haven't subscribed to any courses.</h1>
+            {% else %}
+                <h1 >Subscribed Courses:</h1>
+            {% endif %}
+        </div>
+    </div> 
+        <div id="main_container">
+            {% for course in subscribed_courses %}
+                <div class="course_card">
+                    <div class="inside_course_card" ><a style="text-decoration: none;" href="{% url 'course_view' course.creator course.course_name %}">
+                        <div>
+                            <img width="100%" src="{{course.course_thumbnail}}">
+                        </div>
+                        <h5>{% if course.course_name|length <= 50  %}  {{course.course_name}} {% else %} {{course.course_name|slice:":50"}}... {% endif %}</h5>
+                        <p>{% if course.course_description|length <= 100  %}  {{course.course_description}} {% else %} {{course.course_description|slice:":100"}}... {% endif %}</p>
+                    </a></div>
+                </div>
+            {% endfor %}
+        </div>
+    {% if s_c_c > 0 %}
+        <nav aria-label="Page navigation example" style="padding-right: clamp(10px,2%,2%); padding-left: clamp(10px,2%,2%); ">
+            <ul class="pagination justify-content-end">
+                {% if subscribed_courses.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{subscribed_courses.previous_page_number}}" tabindex="-1">Previous</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                    </li>
+                {% endif %}
+                <li class="page-item"><a class="page-link" href="?page={{subscribed_courses.number}}">{{subscribed_courses.number}}<span class="sr-only"></span></a></li>
+                {% if subscribed_courses.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{subscribed_courses.next_page_number}}" tabindex="-1">Next</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% endblock %}

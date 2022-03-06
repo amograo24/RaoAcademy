@@ -1,0 +1,32 @@
+{% extends "online_edu/layout.html" %}
+{% block title %}Search Results{% endblock %}
+{% block body %}
+    {% if related_courses|length != 0 %}
+        <div style="display: grid; grid-template-columns: 100%;">
+            <div class="fpxm" style="margin-top: 2%; margin-bottom: 2%; border: 1px solid; padding: 2%; border-radius: 8px; background: rgb(142,202,230); background: linear-gradient(90deg, rgba(142,202,230,1) 26%, rgba(251,133,0,1) 100%); color: white;">
+                <h3>Rao Academy</h3>
+                <h1>Courses related to "{{search_entry}}":</h1>
+            </div>
+        </div> 
+            <div id="main_container" style="display: flex; flex-wrap: wrap; justify-content: center;">
+                {% for course in related_courses %}
+                    <div class="course_card" >
+                        <div class="inside_course_card" ><a style="text-decoration: none;" href="{% url 'course_view' course.creator course.course_name %}">
+                            <div>
+                                <img width="100%" src="{{course.course_thumbnail}}">
+                            </div>
+                            <h5 style="color: black; padding-left: 5px; padding-right: 5px; word-wrap: break-word;">{% if course.course_name|length <= 50  %}  {{course.course_name}} {% else %} {{course.course_name|slice:":50"}}... {% endif %}</h5>
+                            <p style="color: rgb(99, 99, 99); padding-left: 5px; padding-right: 5px; word-wrap: break-word;">{% if course.course_description|length <= 100  %}  {{course.course_description}} {% else %} {{course.course_description|slice:":100"}}... {% endif %}</p>  
+                        </a></div>
+                    </div>
+                {% endfor %}
+            </div>
+    {% else %}
+        <div style="display: grid; grid-template-columns: 100%;">
+            <div class="fpxm" style="margin-top: 2%; margin-bottom: 2%; border: 1px solid; padding: 2%; border-radius: 8px; background: rgb(142,202,230); background: linear-gradient(90deg, rgba(142,202,230,1) 26%, rgba(251,133,0,1) 100%); color: white;">
+                <h3>Rao Academy</h3>
+                <h1>Couldn't find courses related to '{{search_entry}}'</h1>
+            </div>
+        </div> 
+    {% endif %}
+{% endblock %}

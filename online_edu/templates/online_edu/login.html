@@ -1,0 +1,28 @@
+{% extends "online_edu/layout.html" %}
+{% block title %}Login{% endblock %}
+{% block body %}
+    {% if message %}
+        <div class="fpxm">{{ message }}</div>
+    {% endif %}
+    <div style="display: grid; grid-template-columns: 100%;">
+        <div class="fpxm" style="margin-top: 2%; margin-bottom: 2%; border: 1px solid; padding: 2%; border-radius: 8px; background: rgb(0,0,239); background: linear-gradient(90deg, rgba(0,0,239,1) 0%, rgba(255,255,255,1) 100%); color: white;">
+            <h3>Rao Academy</h3>
+            <h1>Login</h1>
+        </div>
+    </div> 
+    <form action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+        <h4 class="edit_labels">Username:</h4>
+        <div>
+            <input autofocus class="course_edit_form" type="text" name="username" placeholder="Username">
+        </div>
+        <h4 class="edit_labels">Password:</h4>
+        <div>
+            <input class="course_edit_form" type="password" name="password" placeholder="Password">
+        </div>
+        <input class="button_blue" type="submit" value="Login">
+    </form>
+
+    <p class="fpx" >Don't have an account? <a href="{% url 'register' %}">Register here.</a></p>
+
+{% endblock %}

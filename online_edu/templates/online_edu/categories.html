@@ -1,0 +1,13 @@
+{% extends "online_edu/layout.html" %}
+{% block title %}Categories{% endblock %}
+{% block body %}
+    <div style="display: grid; grid-template-columns: 100%;">
+        <div class="fpxm" style="margin-top: 2%; margin-bottom: 2%; border: 1px solid; padding: 2%; border-radius: 8px; background: rgb(204,0,0); background: linear-gradient(90deg, rgba(204,0,0,1) 0%, rgba(255,149,0,1) 100%); color: white;">
+            <h3>Rao Academy</h3>
+            <h1>Categories:</h1>
+        </div>
+    </div> 
+    {% for category in categories %}
+        <h1 class="fpx" style="margin-bottom: 2%;"><a href="{% url 'category' category.category_name %}">{{category.category_name}}</a></h1>
+    {% endfor %}
+{% endblock %}
