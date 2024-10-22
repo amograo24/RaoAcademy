@@ -1,4 +1,6 @@
-# Rao Academy
+# Rao Academy (IT Council Open Courseware - ITOC at DPS Bangalore South)
+
+*Note: This was my final web-development project for "Harvard's CS50 Web Programming with Python and JavaScript course". **This was deployed at Delhi Public School, Bangalore South as the IT Council Open Couresware (ITOC) - a means for course delivery by the Information Technology (IT) Council to the students.***
 
 Rao Academy has been designed to serve as a one stop online learning platform, aimed at providing all learning enthusiasts with quality online education, free of cost. 
 
